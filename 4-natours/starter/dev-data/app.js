@@ -1,19 +1,100 @@
+const fs = require('fs');
 const express = require('express');
 
 const app = express();
 
+// middleware
+app.use(express.json());
 // define routes
-app.get('/', (req, res) => {
-  // res.status(200).send('Hello from the server side.');
-  res
-    .status(200)
-    .json({ message: 'Hello from the server side.', app: 'natours' });
+// app.get('/', (req, res) => {
+//   // res.status(200).send('Hello from the server side.');
+//   res
+//     .status(200)
+//     .json({ message: 'Hello from the server side.', app: 'natours' });
+// });
+
+// app.post('/', (req, res) => {
+//   res.send('Sending Post request...');
+// });
+// // to start a server
+// const port = 3000;
+// app.listen(port, () => {
+//   console.log(`App listening on port ${port}`);
+// });
+
+// natours Project
+//reading data
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/data/tours-simple.json`)
+);
+
+//Route handlers
+
+//getting al the tours
+app.get('/api/v1/tours', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
 });
 
-app.post('/', (req, res) => {
-  res.send('Sending Post request...');
+//getting one tour based on ID
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  // params = contains all the varibles that we define in URL
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
 });
-// to start a server
+
+app.post('/api/v1/tours', (req, res) => {
+  // console.log(req.body);
+  //creating new id manually as no DB
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+  tours.push(newTour);
+  fs.writeFile(
+    `${__dirname}/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
+});
+
+// update: Put and patch
+app.patch('/api/v2/tours/:id', (req, res) => {
+  if (req.params.id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    tour: '<Updated tours here...>',
+  });
+});
 const port = 3000;
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
