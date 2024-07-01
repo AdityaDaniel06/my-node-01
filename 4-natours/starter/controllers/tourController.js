@@ -6,6 +6,26 @@ const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
   );
 
+  exports.checkId = (req , res, next , val) =>{
+    console.log(`tour ID: ${val}`);
+    if (req.params.id > tours.length) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Invalid ID',
+      });
+    }
+    next();
+  }
+
+exports.bodyCheck = (req, res, next, val) => {
+  if (!req.body.name ||!req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price',
+    });
+  }
+  next();
+}
 //Route handlers
 exports.getAllTours = (req, res) => {
   // console.log(requestTime);
@@ -24,12 +44,6 @@ exports.getOneTour = function (req, res) {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   // params = contains all the varibles that we define in URL
   res.status(200).json({
     status: 'success',
@@ -61,12 +75,7 @@ exports.createTours = function (req, res) {
 
 // update: Put and patch
 exports.updateTours = function (req, res) {
-  if (req.params.id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
+  
   res.status(200).json({
     status: 'success',
     tour: '<Updated tours here...>',
