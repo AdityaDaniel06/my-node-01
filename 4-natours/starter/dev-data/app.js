@@ -7,10 +7,11 @@ const userRouter = require('../routes/userRoutes');
 const app = express();
 // middleware
 //3rd party logging middleware Morgan
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 app.use(express.json());
 app.use(express.static(`${__dirname}/../public`));
-
 
 //custom middleware
 app.use((req, res, next) => {

@@ -1,9 +1,11 @@
+const mongoose  = require('mongoose');
 const app = require('./starter/dev-data/app');
+
 const dotenv = require('dotenv');
 
 dotenv.config({ path: './starter/config/config.env' });
 
-const port = 3000;
+const port = process.env.PORT|| 3000;
 console.log(app.get('env'));
 console.log(process.env);
 app.listen(port, () => {
