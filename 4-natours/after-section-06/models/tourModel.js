@@ -1,38 +1,73 @@
 const mongoose = require('mongoose');
 
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'],
-    unique: true
+const tourSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'A tour must have a name'],
+      unique: true,
+      trim: true
+    },
+    rating: { type: Number, default: 4.5 },
+    price: {
+      type: Number,
+      required: [true, 'A tour must have a price']
+    },
+    duration: {
+      type: Number,
+      required: [true, 'A tour must have a duration']
+    },
+    maxGroupSize: {
+      type: Number,
+      required: [true, 'A tour must have a group size']
+    },
+    difficulty: {
+      type: String,
+      required: [true, 'A tour must have a difficulty']
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0
+    },
+    ratingsAverage: {
+      type: Number,
+      default: 4.5
+    },
+    priceDiscount: Number,
+    summary: {
+      type: String,
+      trim: true,
+      required: [true, 'A tour must have a summary']
+    },
+    description: {
+      type: String,
+      trim: true,
+      required: [true, 'A tour must have a description']
+    },
+    imageCover: {
+      type: String,
+      required: [true, 'A tour must have a cover image']
+    },
+    images: [String],
+    createdAt: {
+      type: Date,
+      default: Date.now()
+    },
+    startDates: [Date]
   },
-  rating: { type: Number, default: 4.5 },
-  price: {
-    type: Number,
-    required: [true, 'A tour must have a price']
-  },
-  duration: {
-    type: Number,
-    required: [true, 'A tour must have a duration']
-  },
-  maxGroupSize: {
-    type: Number,
-    required: [true, 'A tour must have a group size']
-  },
-  difficulty: {
-    type: String,
-    required: [true, 'A tour must have a difficulty']
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
+);
+
+//virtual properties: used when we don't want to store in db, values that can be easily derived
+tourSchema.virtual('durationWeeks').get(function() {
+  return this.duration / 7;
 });
+
+//middleware in mongoose: document , query , aggregate , model
+
 const Tour = mongoose.model('Tour', tourSchema);
-// const testTour = new Tour({
-//   name: 'The Snow Adventurer',
-//   rating: 4.2,
-//   price: 999
-// });
-// testTour
-//   .save()
-//   .then(doc => console.log(doc))
-//   .catch(err => console.log(err));
 
 module.exports = Tour;

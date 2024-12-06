@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 const User = require('../models/userModel');
 
 const jwt = require('jsonwebtoken');
