@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       // This only works on CREATE and SAVE
       validator: function(value) {
-        return value === this.password;
+        return value === this.password; // returns true
       },
       message: 'Passwords do not match'
     }

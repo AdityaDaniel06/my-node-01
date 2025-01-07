@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true
     },
+    slug: String,
     rating: { type: Number, default: 4.5 },
     price: {
       type: Number,
@@ -67,6 +69,12 @@ tourSchema.virtual('durationWeeks').get(function() {
 });
 
 //middleware in mongoose: document , query , aggregate , model
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+tourSchema.pre('save', function(next) {
+  // console.log(this); // will print the document just before saving it to database
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
